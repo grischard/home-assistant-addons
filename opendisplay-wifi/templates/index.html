@@ -175,7 +175,7 @@
       <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-4">
         <div>
           <h2 class="text-lg font-semibold" style="color: var(--ha-blue-dark)">Images</h2>
-          <p class="text-sm text-gray-500 mt-1">Upload local files or add image URLs. All images show up here with thumbnails and per-item actions.</p>
+          <p class="text-sm text-gray-500 mt-1">Upload local files or add raw display URLs. Uploads show thumbnails; URLs are fetched when screens request images.</p>
         </div>
         <div class="flex gap-3 flex-wrap">
           <button onclick="openFilePicker()" class="btn-ha">Upload image</button>
@@ -316,13 +316,13 @@
       <h2 class="text-lg font-semibold mb-4" style="color: var(--ha-blue-dark)">Add URL</h2>
       <div class="mb-3">
         <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-        <input type="text" id="url-image-input" class="input-ha" placeholder="https://example.com/image.png">
+        <input type="text" id="url-image-input" class="input-ha" placeholder="https://example.com/display.raw">
       </div>
       <div class="mb-3">
         <label class="block text-sm font-medium text-gray-700 mb-1">Name (optional)</label>
         <input type="text" id="url-name-input" class="input-ha" placeholder="Cover photo">
       </div>
-      <p class="text-xs text-gray-500 mb-4">The add-on fetches the image now and creates a thumbnail. This can take up to 60 seconds for slow servers.</p>
+      <p class="text-xs text-gray-500 mb-4">The add-on stores the URL and sends its raw response bytes to the display whenever the display requests an image.</p>
       <div class="flex gap-2 justify-end">
         <button onclick="closeUrlModal()" class="px-4 py-2 rounded-md text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200">Cancel</button>
         <button id="url-submit-button" onclick="submitUrlImage()" class="btn-ha">Add URL</button>
@@ -1005,7 +1005,7 @@
 
       const button = document.getElementById("url-submit-button");
       button.disabled = true;
-      setStatus("Fetching image URL and generating thumbnail...", "info");
+      setStatus("Adding URL...", "info");
 
       try {
         const res = await fetch(`${BASE}/api/images/url`, {

@@ -15,7 +15,7 @@ This add-on uses a source install of the [`wifi-server` branch of py-opendisplay
 - View connected screens with their dimensions and color support
 - Assign images to screens:
   - **Upload a local image** - converted and sent to the display
-  - **Provide a URL** - the server fetches it periodically at a configurable interval, updating the display when the image changes
+  - **Provide a URL** - the server fetches the URL on each display request and sends the raw response bytes without local conversion or caching
 
 ## Installation
 

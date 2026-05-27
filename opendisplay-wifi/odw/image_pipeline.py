@@ -91,6 +91,23 @@ class ImagePipeline:
     def get_cached_image_for(self, source: str, width: int, height: int, fit: str) -> bytes | None:
         return self.cache.get(source, width, height, fit)
 
+    def get_raw_url(self, source: str) -> bytes | None:
+        started = time.monotonic()
+        try:
+            data = self.library.fetch_url_bytes(source)
+        except Exception:
+            LOGGER.exception("Failed to fetch raw URL: %s", source)
+            return None
+
+        log_duration(
+            "Fetched raw URL",
+            started,
+            level=logging.INFO,
+            source=log_source(source),
+            bytes=len(data),
+        )
+        return data
+
     def clear_caches_for_source(self, source: str) -> None:
         self.cache.clear_for_source(source)
 

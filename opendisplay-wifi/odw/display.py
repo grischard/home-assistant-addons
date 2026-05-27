@@ -98,6 +98,8 @@ class DisplayService:
         source = entry.source.strip()
         if not source:
             return False
+        if entry.type == "url" or is_url(source):
+            return True
         return self.pipeline.is_cached(source, key, fit)
 
     def get_album_display_entry(
@@ -178,12 +180,11 @@ class DisplayService:
 
         source, source_type = resolved
         width, height = announcement.width, announcement.height
-        cached = self.pipeline.get_cached_image_for(source, width, height, assignment.fit)
 
         if source_type == "url" or is_url(source):
-            self.pipeline.schedule_preprocess(source, width, height, assignment.fit, source_type)
-            return cached
+            return self.pipeline.get_raw_url(source)
 
+        cached = self.pipeline.get_cached_image_for(source, width, height, assignment.fit)
         if cached is not None:
             return cached
 
@@ -210,6 +211,8 @@ class DisplayService:
                 if not source:
                     continue
                 source_type = entry.type or ("url" if is_url(source) else "file")
+                if source_type == "url" or is_url(source):
+                    continue
                 result = self.pipeline.schedule_preprocess(source, width, height, fit, source_type)
                 if result is PreprocessScheduleResult.QUEUED:
                     queued += 1
@@ -227,6 +230,8 @@ class DisplayService:
         if not source:
             return
         source_type = assignment.source_type or ("url" if is_url(source) else "file")
+        if source_type == "url" or is_url(source):
+            return
         self.pipeline.schedule_preprocess(source, width, height, fit, source_type)
 
     def warm_assignment_caches(self) -> None:

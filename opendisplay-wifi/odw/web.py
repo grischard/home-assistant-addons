@@ -334,13 +334,6 @@ class WebHandlers:
             created_at=time.time(),
         )
 
-        loop = asyncio.get_running_loop()
-        try:
-            await loop.run_in_executor(None, self.library.generate_library_thumbnail, image_id, source)
-        except Exception as err:
-            LOGGER.warning("Failed to fetch URL image %s: %s", source, err)
-            return web.json_response({"error": f"Failed to fetch image: {err}"}, status=400)
-
         self.state.images[image_id] = item
         self.library.save_images()
         return web.json_response({"ok": True, "image": self.library.serialize_image(item)})
@@ -442,6 +435,8 @@ class WebHandlers:
             return web.Response(status=404)
 
         thumb_path = self.library.image_thumb_path(image_id)
+        if item.type == "url":
+            return web.Response(status=404)
         if not thumb_path.is_file():
             loop = asyncio.get_running_loop()
             try:

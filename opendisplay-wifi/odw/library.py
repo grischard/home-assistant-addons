@@ -136,9 +136,12 @@ class LibraryStore:
         thumb.thumbnail(THUMB_MAX_SIZE)
         thumb.convert("RGB").save(thumb_path, "JPEG", quality=80)
 
-    def fetch_url_image(self, source: str, timeout: int = 60) -> Image.Image:
+    def fetch_url_bytes(self, source: str, timeout: int = 60) -> bytes:
         with urlopen(source, timeout=timeout) as response:  # noqa: S310
-            raw = response.read()
+            return response.read()
+
+    def fetch_url_image(self, source: str, timeout: int = 60) -> Image.Image:
+        raw = self.fetch_url_bytes(source, timeout)
         img = Image.open(io.BytesIO(raw))
         img.load()
         return img
